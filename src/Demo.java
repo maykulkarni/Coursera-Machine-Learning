@@ -1,24 +1,19 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import Exercise1_Linear_Regression.LinearRegressor;
+import Utils.Matrix;
+
+import java.io.IOException;
 
 /**
  * Created by mayur on 6/4/17.
  */
 public class Demo {
-    public static void main(String[] args) {
-        Map<String, List> map = new HashMap<>();
-        List<Long> baya = new ArrayList<>();
-        map.put("a", baya);
-        List<Integer> ss = new ArrayList<>();
-        map.put("aa", ss);
-//        int num = map.get("a").get(9).intValue();
-        Number a = new Double(2.7812897);
-        if (a instanceof Integer) {
-            System.out.println("si");
-        }
-        map.get(":").add(78);
-//        System.out.println(aa);
+    public static void main(String[] args) throws IOException {
+        Matrix matrix = Matrix.fromCSV("\\Files\\ex1data1.txt");
+        matrix.setDependentVariable("1");
+        LinearRegressor lr = new LinearRegressor();
+        lr.fit(matrix);
+//        System.out.println(lr.costFunction());
+        lr.gradientDescent();
+//        matrix.completeMatrix();
     }
 }

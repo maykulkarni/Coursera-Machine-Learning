@@ -12,14 +12,18 @@ import java.util.Map;
  */
 
 public class LinearRegressor {
-    private Matrix matrix;
-    private String dependentVariable;
-    private int indepVarSize;
     Map<String, Double> predictors;
     List<String> columnList;
     int rowCount = 0;
     double alpha = 0;
-    double epsilon = 1e-5;
+    double epsilon = 1e-8;
+    private Matrix matrix;
+    private String dependentVariable;
+    private int indepVarSize;
+
+    public static void main(String[] args) {
+        new LinearRegressor().costFunction();
+    }
 
     public void fit(Matrix inputMatrix) {
         this.matrix = inputMatrix;
@@ -27,51 +31,59 @@ public class LinearRegressor {
         this.indepVarSize = matrix.values.size() - 1;
         predictors = new HashMap<>(indepVarSize + 1);
         columnList = matrix.columnList;
-        columnList.add("def");
-        rowCount = matrix.values.get(dependentVariable).size();
+        rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
         for (String str : columnList) predictors.put(str, 0d);
         predictors.put("def", 0d);
+        predictors.remove(dependentVariable);
+        System.out.println("Dependent Variable : " + dependentVariable);
+        System.out.println("Predictors " + predictors);
+        System.out.println("Column List : " + columnList);
     }
 
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
-            error += (1 / rowCount) * Math.pow((predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i)), 2);
+            error += Math.pow((predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i)), 2);
         }
-        return error;
+        return error * (1D / (2D * rowCount));
     }
 
     public double predict(Map<String, Object> tuple) {
         double prediction = 0;
         tuple.put("def", 1d);
-        for (String str : columnList) {
+        for (String str : predictors.keySet()) {
             prediction += predictors.get(str) * (Double) tuple.get(str);
         }
         return prediction;
     }
 
-    public double gradient(String col) {
+    private double gradient(String col) {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
-            sum += (predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i))
+            double pred = predict(matrix.tuple(i));
+            double actual = (Double) matrix.get(dependentVariable, i);
+            sum += (pred - actual)
                     * (col.equals("def") ? 1 : (Double) matrix.get(col, i));
         }
         return sum / rowCount;
     }
 
-
     public void gradientDescent() {
+        alpha = 0.01;
         Map<String, Object> temp = new HashMap<>(rowCount);
-        while (costFunction() < epsilon) {
-            for (String col : columnList) {
+        int iteration = 0;
+
+        while (costFunction() >= epsilon && iteration < 2000) {
+            if (iteration % 1500 == 0)
+                System.out.println(costFunction());
+            for (String col : predictors.keySet()) {
                 temp.put(col, predictors.get(col) - alpha * gradient(col));
             }
             predictors = (Map) ((HashMap) temp).clone();
+            iteration++;
         }
-    }
-
-    public static void main(String[] args) {
-        new LinearRegressor().costFunction();
+        System.out.println("Iterations : " + iteration);
+        System.out.println(predictors);
     }
 }
 
