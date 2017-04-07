@@ -6,20 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * Created by Mayur Kulkarni on 4/5/2017.
- * Email : mayurkulkarni012@gmail.com
+ * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
  */
 
 public class LinearRegressor {
-    Map<String, Double> predictors;
-    List<String> columnList;
-    int rowCount = 0;
-    double alpha = 0;
-    double epsilon = 1e-8;
+    private Map<String, Double> predictors;
+    private List<String> columnList;
+    private int rowCount = 0;
+    private double alpha = 0;
+    private double epsilon = 1e-8;
     private Matrix matrix;
     private String dependentVariable;
-    private int indepVarSize;
 
     public static void main(String[] args) {
         new LinearRegressor().costFunction();
@@ -28,7 +27,7 @@ public class LinearRegressor {
     public void fit(Matrix inputMatrix) {
         this.matrix = inputMatrix;
         this.dependentVariable = matrix.dependentVariable;
-        this.indepVarSize = matrix.values.size() - 1;
+        int indepVarSize = matrix.values.size() - 1;
         predictors = new HashMap<>(indepVarSize + 1);
         columnList = matrix.columnList;
         rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
@@ -40,7 +39,7 @@ public class LinearRegressor {
         System.out.println("Column List : " + columnList);
     }
 
-    public double costFunction() {
+    private double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
             error += Math.pow((predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i)), 2);
@@ -68,14 +67,13 @@ public class LinearRegressor {
         return sum / rowCount;
     }
 
+
     public void gradientDescent() {
         alpha = 0.01;
         Map<String, Object> temp = new HashMap<>(rowCount);
         int iteration = 0;
 
         while (costFunction() >= epsilon && iteration < 2000) {
-            if (iteration % 1500 == 0)
-                System.out.println(costFunction());
             for (String col : predictors.keySet()) {
                 temp.put(col, predictors.get(col) - alpha * gradient(col));
             }

@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by Mayur Kulkarni on 4/5/2017.
- * Email : mayurkulkarni012@gmail.com
+ * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
  */
 
 public class Matrix {
