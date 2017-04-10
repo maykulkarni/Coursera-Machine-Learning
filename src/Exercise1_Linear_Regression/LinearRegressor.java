@@ -12,18 +12,60 @@ import java.util.Map;
  */
 
 public class LinearRegressor {
+    /**
+     * Holds the coefficient of every input
+     * value.
+     * Prediction = \sum (Pi * Xi)
+     */
     private Map<String, Double> predictors;
+
+    /**
+     * List of the columns
+     */
     private List<String> columnList;
+
+    /**
+     * Number of rows in the matrix
+     */
     private int rowCount = 0;
-    private double alpha = 0;
-    private double epsilon = 1e-8;
+
+    /**
+     * Controls the learning rate of gradient
+     * descent
+     */
+    private double alpha = 0.1;
+
+    /**
+     * States maximum number of iterations in
+     * gradient descent
+     */
+    private long maxNumberOfIterations = 2000;
+
+    /**
+     * Minimum accuracy to be achieved before
+     * converging.
+     * Note: Will terminate if taken > max number
+     * of iterations
+     */
+    private double epsilon = 1e-5;
+
+
     private Matrix matrix;
+
+    /**
+     * Dependent variable in the matrix
+     */
     private String dependentVariable;
 
     public static void main(String[] args) {
         new LinearRegressor().costFunction();
     }
 
+    /**
+     * Train linear regression using Gradient Descent
+     *
+     * @param inputMatrix matrix to be trained on
+     */
     public void fit(Matrix inputMatrix) {
         this.matrix = inputMatrix;
         this.dependentVariable = matrix.dependentVariable;
@@ -36,9 +78,15 @@ public class LinearRegressor {
         predictors.remove(dependentVariable);
         System.out.println("Dependent Variable : " + dependentVariable);
         System.out.println("Predictors " + predictors);
-        System.out.println("Column List : " + columnList);
+        gradientDescent();
     }
 
+    /**
+     * Calculates the error with current values of
+     * predictors
+     *
+     * @return Mean Squared Error
+     */
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
@@ -47,6 +95,12 @@ public class LinearRegressor {
         return error * (1D / (2D * rowCount));
     }
 
+    /**
+     * Predicts on a given row
+     *
+     * @param tuple input row
+     * @return prediction value
+     */
     public double predict(Map<String, Object> tuple) {
         double prediction = 0;
         tuple.put("def", 1d);
@@ -56,6 +110,11 @@ public class LinearRegressor {
         return prediction;
     }
 
+    /**
+     * Calculates the gradient
+     * @param col       column to calculate on
+     * @return
+     */
     private double gradient(String col) {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
@@ -67,7 +126,9 @@ public class LinearRegressor {
         return sum / rowCount;
     }
 
-
+    /**
+     * Apply gradient descent
+     */
     public void gradientDescent() {
         alpha = 0.01;
         Map<String, Object> temp = new HashMap<>(rowCount);

@@ -3,33 +3,42 @@ package Utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
  */
 
 public class Matrix {
-    public Map<String, List> values;
-    public List<String> columnList;
-    public String dependentVariable;
-    private HashMap<String, Integer> columnMap;
-    private long rowSize = 0;
 
-    public Matrix(String[] featureList, String dependentVariable) {
-        values = new HashMap<>();
-        this.columnList = Arrays.asList(featureList);
-        this.dependentVariable = dependentVariable;
-        this.columnMap = new HashMap<>(featureList.length);
-        for(int i = 0; i < featureList.length; i++) {
-            columnMap.put(featureList[i], i);
-        }
-    }
+    /**
+     * Holds list of columns indexed by column
+     * name.
+     */
+    public Map<String, List> values;
+
+    /**
+     * column names
+     */
+    public List<String> columnList;
+
+    public String dependentVariable;
+    private long rowSize = 0;
 
     public Matrix() {
         values = new HashMap<>();
     }
 
+    /**
+     * Create matrix from CSV
+     *
+     * @param filePath file path of CSV
+     * @return matrix created from CSV file
+     * @throws IOException
+     */
     public static Matrix fromCSV(String filePath) throws IOException {
         Matrix matrix = new Matrix();
         String absPath = new java.io.File(".").getCanonicalPath();
@@ -59,6 +68,9 @@ public class Matrix {
         System.out.println(matrix.dependentVariable);
     }
 
+    /**
+     * Print complete matrix
+     */
     public void completeMatrix() {
         System.out.println("RowSize : " + rowSize);
         for (int i = 0; i < rowSize; i++) {
@@ -69,6 +81,11 @@ public class Matrix {
         }
     }
 
+    /**
+     * Get column indexed by column name
+     * @param columnName    column name
+     * @return List of values
+     */
     public List<Object> getColumn(String columnName) {
         return values.get(columnName);
     }
@@ -78,6 +95,11 @@ public class Matrix {
 
     }
 
+    /**
+     * Returns a row in the matrix
+     * @param row       row index
+     * @return row of a matrix
+     */
     public Map<String, Object> tuple(int row) {
         Map<String, Object> tuple = new HashMap<>();
         for (String str : columnList) {
@@ -86,10 +108,22 @@ public class Matrix {
         return tuple;
     }
 
+    /**
+     * Get a particular value in matrix
+     * indexed by row and column
+     * @param column    column name (String)
+     * @param index     integer index
+     * @return value at the column and row
+     */
     public Object get(String column, int index) {
         return values.get(column).get(index);
     }
 
+    /**
+     * Set the current dependent variable
+     * @param dependentVariable new dependent variable name
+     * @throws RuntimeException if dependent variable is invalid
+     */
     public void setDependentVariable(String dependentVariable) {
         if (!values.keySet().contains(dependentVariable)) throw new RuntimeException("unknown Dependent variable");
         this.dependentVariable = dependentVariable;

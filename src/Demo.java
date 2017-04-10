@@ -16,7 +16,6 @@ public class Demo {
         matrix = nr.fit(matrix);
         lr.fit(matrix);
         System.out.println(lr.costFunction());
-        lr.gradientDescent();
         System.out.println(nr.meanMap);
         System.out.println(nr.standardDeviationMap);
     }

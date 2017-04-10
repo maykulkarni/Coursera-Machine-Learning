@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class Normalizer {
     public Map<String, Double> meanMap = new HashMap<>();
     public Map<String, Double> standardDeviationMap = new HashMap<>();
-    Matrix matrix;
 
     public static void main(String[] args) throws IOException {
         Matrix matrix = Matrix.fromCSV("\\Files\\test.txt");
@@ -23,6 +22,13 @@ public class Normalizer {
         System.out.println(matrix.values);
     }
 
+    /**
+     * Uses Z-Score normalization and applies on every
+     * column of the matrix
+     *
+     * @param matrix input matrix
+     * @return Normalized matrix
+     */
     public Matrix fit(Matrix matrix) {
         for (String columns : matrix.columnList)
             if (!columns.equals(matrix.dependentVariable)) {
@@ -40,6 +46,12 @@ public class Normalizer {
         return matrix;
     }
 
+    /**
+     * Calculates Standard Deviation
+     * @param currentColumn column to be calculated on
+     * @param mean          mean of the current column
+     * @return standard deviation
+     */
     private double standardDeviation(List currentColumn, double mean) {
         DoubleAdder da = new DoubleAdder();
         currentColumn.stream()
@@ -48,6 +60,11 @@ public class Normalizer {
         return Math.sqrt(da.doubleValue() / currentColumn.size());
     }
 
+    /**
+     * Calculates mean
+     * @param currentColumn column to be calculated on
+     * @return mean
+     */
     private double mean(List currentColumn) {
         double sum = currentColumn.stream()
                 .mapToDouble(x -> (double) x)
