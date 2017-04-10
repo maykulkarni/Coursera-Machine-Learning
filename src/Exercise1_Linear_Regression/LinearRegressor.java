@@ -39,7 +39,7 @@ public class LinearRegressor {
         System.out.println("Column List : " + columnList);
     }
 
-    private double costFunction() {
+    public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
             error += Math.pow((predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i)), 2);
@@ -82,6 +82,8 @@ public class LinearRegressor {
         }
         System.out.println("Iterations : " + iteration);
         System.out.println(predictors);
+        System.out.println("Error after descending: ");
+        System.out.println(costFunction());
     }
 }
 

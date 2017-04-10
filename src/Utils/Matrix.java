@@ -14,6 +14,7 @@ public class Matrix {
     public List<String> columnList;
     public String dependentVariable;
     private HashMap<String, Integer> columnMap;
+    private long rowSize = 0;
 
     public Matrix(String[] featureList, String dependentVariable) {
         values = new HashMap<>();
@@ -39,12 +40,15 @@ public class Matrix {
             matrix.values.put(String.valueOf(i), new ArrayList<Double>());
         for (int i = 0; i < firstLine.length; i++)
             matrix.values.get(String.valueOf(i)).add(Double.parseDouble(firstLine[i]));
+        long rowSize = 0;
         while ((currLine = br.readLine()) != null) {
             String[] splitLine = currLine.split(",");
             for (int i = 0; i < splitLine.length; i++)
                 matrix.values.get(String.valueOf(i)).add(Double.parseDouble(splitLine[i]));
+            rowSize++;
         }
         matrix.columnList = new ArrayList<>(matrix.values.keySet());
+        matrix.rowSize = rowSize;
         return matrix;
     }
 
@@ -56,7 +60,8 @@ public class Matrix {
     }
 
     public void completeMatrix() {
-        for (int i = 0; i < values.get(values.keySet().iterator().next()).size(); i++) {
+        System.out.println("RowSize : " + rowSize);
+        for (int i = 0; i < rowSize; i++) {
             for (String str : columnList) {
                 System.out.print(get(str, i) + "\t");
             }
@@ -64,10 +69,11 @@ public class Matrix {
         }
     }
 
-    public void columns() {
-        System.out.println(columnList);
+    public List<Object> getColumn(String columnName) {
+        return values.get(columnName);
     }
 
+    // TODO
     public void append(String columnName, Number value) {
 
     }

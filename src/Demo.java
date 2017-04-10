@@ -1,5 +1,6 @@
 import Exercise1_Linear_Regression.LinearRegressor;
 import Utils.Matrix;
+import Utils.Normalizer;
 
 import java.io.IOException;
 
@@ -8,12 +9,15 @@ import java.io.IOException;
  */
 public class Demo {
     public static void main(String[] args) throws IOException {
-        Matrix matrix = Matrix.fromCSV("\\Files\\ex1data1.txt");
-        matrix.setDependentVariable("1");
+        Matrix matrix = Matrix.fromCSV("\\Files\\ex1data2.txt");
+        matrix.setDependentVariable("2");
         LinearRegressor lr = new LinearRegressor();
+        Normalizer nr = new Normalizer();
+        matrix = nr.fit(matrix);
         lr.fit(matrix);
-//        System.out.println(lr.costFunction());
+        System.out.println(lr.costFunction());
         lr.gradientDescent();
-//        matrix.completeMatrix();
+        System.out.println(nr.meanMap);
+        System.out.println(nr.standardDeviationMap);
     }
 }
