@@ -44,7 +44,7 @@ public class LinearRegressor {
     /**
      * Minimum accuracy to be achieved before
      * converging.
-     * Note: Will terminate if taken > max number
+     * Note: Will terminate if #iterations > max number
      * of iterations
      */
     private double epsilon = 1e-5;
@@ -132,9 +132,9 @@ public class LinearRegressor {
     public void gradientDescent() {
         alpha = 0.01;
         Map<String, Object> temp = new HashMap<>(rowCount);
-        int iteration = 0;
+        long iteration = 0;
 
-        while (costFunction() >= epsilon && iteration < 2000) {
+        while (costFunction() >= epsilon && iteration < maxNumberOfIterations) {
             for (String col : predictors.keySet()) {
                 temp.put(col, predictors.get(col) - alpha * gradient(col));
             }

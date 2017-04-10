@@ -15,10 +15,10 @@ import java.util.Map;
 public class Matrix {
 
     /**
-     * Holds list of columns indexed by column
+     * Holds list of columns indexed by column name
      * name.
      */
-    public Map<String, List> values;
+    public Map<String, List<Object>> values;
 
     /**
      * column names
@@ -35,9 +35,9 @@ public class Matrix {
     /**
      * Create matrix from CSV
      *
-     * @param filePath file path of CSV
-     * @return matrix created from CSV file
-     * @throws IOException
+     * @param filePath      file path of CSV
+     * @return              matrix created from CSV file
+     * @throws IOException  if the CSV is not found
      */
     public static Matrix fromCSV(String filePath) throws IOException {
         Matrix matrix = new Matrix();
@@ -46,14 +46,14 @@ public class Matrix {
         String currLine = "";
         String[] firstLine = br.readLine().split(",");
         for (int i = 0; i < firstLine.length; i++)
-            matrix.values.put(String.valueOf(i), new ArrayList<Double>());
+            matrix.values.put(String.valueOf(i), new ArrayList<>());
         for (int i = 0; i < firstLine.length; i++)
-            matrix.values.get(String.valueOf(i)).add(Double.parseDouble(firstLine[i]));
+            matrix.values.get(String.valueOf(i)).add(firstLine[i]);
         long rowSize = 0;
         while ((currLine = br.readLine()) != null) {
             String[] splitLine = currLine.split(",");
             for (int i = 0; i < splitLine.length; i++)
-                matrix.values.get(String.valueOf(i)).add(Double.parseDouble(splitLine[i]));
+                matrix.values.get(String.valueOf(i)).add(splitLine[i]);
             rowSize++;
         }
         matrix.columnList = new ArrayList<>(matrix.values.keySet());
@@ -84,7 +84,7 @@ public class Matrix {
     /**
      * Get column indexed by column name
      * @param columnName    column name
-     * @return List of values
+     * @return              List of values
      */
     public List<Object> getColumn(String columnName) {
         return values.get(columnName);
@@ -98,7 +98,7 @@ public class Matrix {
     /**
      * Returns a row in the matrix
      * @param row       row index
-     * @return row of a matrix
+     * @return          row of a matrix
      */
     public Map<String, Object> tuple(int row) {
         Map<String, Object> tuple = new HashMap<>();
@@ -113,7 +113,7 @@ public class Matrix {
      * indexed by row and column
      * @param column    column name (String)
      * @param index     integer index
-     * @return value at the column and row
+     * @return          value at the column and row
      */
     public Object get(String column, int index) {
         return values.get(column).get(index);
