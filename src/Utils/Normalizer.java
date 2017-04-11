@@ -38,11 +38,10 @@ public class Normalizer {
                 meanMap.put(columns, mean);
                 standardDeviationMap.put(columns, standardDeviation);
                 List<Object> modifiedColumn = currentColumn.stream()
-                        .map(x -> ((double) x - mean) / standardDeviation)
+                        .map(x -> String.valueOf((Double.parseDouble((String)x) - mean) / standardDeviation))
                         .collect(Collectors.toList());
                 matrix.values.replace(columns, currentColumn, modifiedColumn);
             }
-        matrix.completeMatrix();
         return matrix;
     }
 
@@ -55,7 +54,7 @@ public class Normalizer {
     private double standardDeviation(List currentColumn, double mean) {
         DoubleAdder da = new DoubleAdder();
         currentColumn.stream()
-                .mapToDouble(x -> (double) x)
+                .mapToDouble(x -> Double.parseDouble((String)x))
                 .forEach((x) -> da.add(Math.pow(x - mean, 2)));
         return Math.sqrt(da.doubleValue() / currentColumn.size());
     }
@@ -67,7 +66,7 @@ public class Normalizer {
      */
     private double mean(List currentColumn) {
         double sum = currentColumn.stream()
-                .mapToDouble(x -> (double) x)
+                .mapToDouble(x -> Double.parseDouble((String)x))
                 .sum();
         return sum / currentColumn.size();
     }

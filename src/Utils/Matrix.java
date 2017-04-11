@@ -61,24 +61,22 @@ public class Matrix {
         return matrix;
     }
 
-    public static void main(String[] args) throws IOException {
-        Matrix matrix = Matrix.fromCSV("/Files/ex1data1.txt");
-        System.out.println(matrix.dependentVariable);
-        matrix.setDependentVariable("1");
-        System.out.println(matrix.dependentVariable);
-    }
 
     /**
      * Print complete matrix
      */
-    public void completeMatrix() {
-        System.out.println("RowSize : " + rowSize);
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Row size : ").append(rowSize).append("\n");
         for (int i = 0; i < rowSize; i++) {
             for (String str : columnList) {
-                System.out.print(get(str, i) + "\t");
+                String currValue = String.valueOf(get(str, i));
+                sb.append(currValue.length() > 13 ? currValue.substring(0, 13) : currValue).append("\t");
             }
-            System.out.println();
+            sb.append("\n");
         }
+        return sb.toString();
     }
 
     /**
@@ -90,10 +88,6 @@ public class Matrix {
         return values.get(columnName);
     }
 
-    // TODO
-    public void append(String columnName, Number value) {
-
-    }
 
     /**
      * Returns a row in the matrix
