@@ -92,7 +92,7 @@ public class LinearRegressor {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
             double prediction = predict(matrix.tuple(i));
-            double actual = Double.valueOf((String) matrix.get(dependentVariable, i));
+            double actual = (double) matrix.get(dependentVariable, i);
             error += Math.pow(prediction - actual, 2);
         }
         return error * (1D / (2D * rowCount));
@@ -104,11 +104,11 @@ public class LinearRegressor {
      * @param tuple input row
      * @return prediction value
      */
-    public double predict(Map<String, Object> tuple) {
+    public double predict(Map<String, Double> tuple) {
         double prediction = 0;
-        tuple.put("def", "1");
+        tuple.put("def", 1d);
         for (String str : predictors.keySet()) {
-            prediction += predictors.get(str) * Double.valueOf((String) tuple.get(str));
+            prediction += predictors.get(str) * tuple.get(str);
         }
         return prediction;
     }
@@ -122,9 +122,9 @@ public class LinearRegressor {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
             double pred = predict(matrix.tuple(i));
-            double actual = Double.valueOf((String) matrix.get(dependentVariable, i));
+            double actual = (double) matrix.get(dependentVariable, i);
             sum += (pred - actual)
-                    * (col.equals("def") ? 1 : Double.valueOf((String) matrix.get(col, i)));
+                    * (col.equals("def") ? 1 : (double) matrix.get(col, i));
         }
         return sum / rowCount;
     }

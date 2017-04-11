@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
@@ -18,7 +19,7 @@ public class Matrix {
      * Holds list of columns indexed by column name
      * name.
      */
-    public Map<String, List<Object>> values;
+    public Map<String, List> values;
 
     /**
      * column names
@@ -27,12 +28,13 @@ public class Matrix {
 
     public String dependentVariable;
     private long rowSize = 0;
-    private Map<String, Object> tuple;
+    private Map<String, Double> tuple;
+    public boolean isNumericalData = false;
 
     public Matrix() {
         values = new HashMap<>();
         tuple = new HashMap<>();
-        tuple.put("def", "1");
+        tuple.put("def", 1d);
     }
 
     /**
@@ -64,6 +66,22 @@ public class Matrix {
         return matrix;
     }
 
+    public void attemptNumericalConversion() {
+        System.out.println("Attempting to convert data to numerical");
+        try {
+            for (String col : columnList) {
+                List<String> currCol = values.get(col);
+                List<Double> modifiedList = currCol.stream()
+                        .map(Double::parseDouble)
+                        .collect(Collectors.toList());
+                values.replace(col, currCol, modifiedList);
+                isNumericalData = true;
+            }
+        } catch (Exception e) {
+            System.err.println("Numerical Conversion failed, some operation cannot be permitted");
+        }
+    }
+
 
     /**
      * Print complete matrix
@@ -87,7 +105,7 @@ public class Matrix {
      * @param columnName    column name
      * @return              List of values
      */
-    public List<Object> getColumn(String columnName) {
+    public List<Double> getColumn(String columnName) {
         return values.get(columnName);
     }
 
@@ -97,9 +115,9 @@ public class Matrix {
      * @param row       row index
      * @return          row of a matrix
      */
-    public Map<String, Object> tuple(int row) {
+    public Map<String, Double> tuple(int row) {
         for (String str : columnList) {
-            tuple.put(str, values.get(str).get(row));
+            tuple.put(str, (double) values.get(str).get(row));
         }
         return tuple;
     }

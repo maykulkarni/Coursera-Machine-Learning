@@ -91,7 +91,7 @@ public class LogisticRegressor {
         }
         predictors.remove(dependentVariable);
         MiscUtils.line();
-        System.out.println("Dependent Variable : " + dependentVariable);
+        System.out.println("Dependent variable : " + dependentVariable);
         System.out.println("Predictors " + predictors);
         System.out.println("Initial Cost : " + costFunction());
         System.out.println("Gradient at initial theta");
@@ -111,7 +111,7 @@ public class LogisticRegressor {
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
-            double actual = Double.parseDouble((String) matrix.get(dependentVariable, i));
+            double actual = (double) matrix.get(dependentVariable, i);
             double prediction = predict(matrix.tuple(i));
             error += actual == 1D ?  Math.log(prediction) : Math.log(1 - prediction);
         }
@@ -128,10 +128,10 @@ public class LogisticRegressor {
      * @param tuple input row
      * @return prediction value
      */
-    public double predict(Map<String, Object> tuple) {
+    public double predict(Map<String, Double> tuple) {
         double prediction = 0;
         for (String str : predictors.keySet()) {
-            prediction += predictorArray[predictors.get(str)] * Double.valueOf((String) tuple.get(str));
+            prediction += predictorArray[predictors.get(str)] * tuple.get(str);
         }
         return sigmoid(prediction);
     }
@@ -145,9 +145,9 @@ public class LogisticRegressor {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
             double pred = predict(matrix.tuple(i));
-            double actual = Double.parseDouble((String)matrix.get(dependentVariable, i));
+            double actual = (double) matrix.get(dependentVariable, i);
             sum += (pred - actual)
-                    * (col.equals("def") ? 1 : Double.parseDouble((String)matrix.get(col, i)));
+                    * (col.equals("def") ? 1 : (double) matrix.get(col, i));
         }
         return sum / rowCount;
     }

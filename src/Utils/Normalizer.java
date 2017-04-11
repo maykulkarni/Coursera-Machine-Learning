@@ -32,13 +32,13 @@ public class Normalizer {
     public Matrix fit(Matrix matrix) {
         for (String columns : matrix.columnList)
             if (!columns.equals(matrix.dependentVariable)) {
-                List<Object> currentColumn = matrix.getColumn(columns);
+                List<Double> currentColumn = matrix.getColumn(columns);
                 double mean = mean(currentColumn);
                 double standardDeviation = standardDeviation(currentColumn, mean);
                 meanMap.put(columns, mean);
                 standardDeviationMap.put(columns, standardDeviation);
-                List<Object> modifiedColumn = currentColumn.stream()
-                        .map(x -> String.valueOf((Double.parseDouble((String)x) - mean) / standardDeviation))
+                List<Double> modifiedColumn = currentColumn.stream()
+                        .map(x -> (x - mean) / standardDeviation)
                         .collect(Collectors.toList());
                 matrix.values.replace(columns, currentColumn, modifiedColumn);
             }
@@ -51,10 +51,10 @@ public class Normalizer {
      * @param mean          mean of the current column
      * @return              standard deviation
      */
-    private double standardDeviation(List currentColumn, double mean) {
+    private double standardDeviation(List<Double> currentColumn, double mean) {
         DoubleAdder da = new DoubleAdder();
         currentColumn.stream()
-                .mapToDouble(x -> Double.parseDouble((String)x))
+                .mapToDouble(x -> x)
                 .forEach((x) -> da.add(Math.pow(x - mean, 2)));
         return Math.sqrt(da.doubleValue() / currentColumn.size());
     }
@@ -64,9 +64,9 @@ public class Normalizer {
      * @param currentColumn column to be calculated on
      * @return              mean
      */
-    private double mean(List currentColumn) {
+    private double mean(List<Double> currentColumn) {
         double sum = currentColumn.stream()
-                .mapToDouble(x -> Double.parseDouble((String)x))
+                .mapToDouble(x -> x)
                 .sum();
         return sum / currentColumn.size();
     }
