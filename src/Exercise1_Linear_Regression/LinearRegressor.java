@@ -90,7 +90,9 @@ public class LinearRegressor {
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
-            error += Math.pow((predict(matrix.tuple(i)) - (Double) matrix.get(dependentVariable, i)), 2);
+            double prediction = predict(matrix.tuple(i));
+            double actual = Double.valueOf((String) matrix.get(dependentVariable, i));
+            error += Math.pow(prediction - actual, 2);
         }
         return error * (1D / (2D * rowCount));
     }
@@ -103,9 +105,9 @@ public class LinearRegressor {
      */
     public double predict(Map<String, Object> tuple) {
         double prediction = 0;
-        tuple.put("def", 1d);
+        tuple.put("def", "1");
         for (String str : predictors.keySet()) {
-            prediction += predictors.get(str) * (Double) tuple.get(str);
+            prediction += predictors.get(str) * Double.valueOf((String) tuple.get(str));
         }
         return prediction;
     }
@@ -119,9 +121,9 @@ public class LinearRegressor {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
             double pred = predict(matrix.tuple(i));
-            double actual = (Double) matrix.get(dependentVariable, i);
+            double actual = Double.valueOf((String) matrix.get(dependentVariable, i));
             sum += (pred - actual)
-                    * (col.equals("def") ? 1 : (Double) matrix.get(col, i));
+                    * (col.equals("def") ? 1 : Double.valueOf((String) matrix.get(col, i)));
         }
         return sum / rowCount;
     }
