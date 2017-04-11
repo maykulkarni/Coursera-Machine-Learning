@@ -86,9 +86,7 @@ public class LogisticRegressor {
         columnList = matrix.columnList;
         rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
         predictors.put("def", 0);
-        for (int i = 0; i < columnList.size(); i++) {
-            predictors.put(columnList.get(i), i + 1);
-        }
+        for (int i = 0; i < columnList.size(); i++) predictors.put(columnList.get(i), i + 1);
         predictors.remove(dependentVariable);
         MiscUtils.line();
         System.out.println("Dependent variable : " + dependentVariable);

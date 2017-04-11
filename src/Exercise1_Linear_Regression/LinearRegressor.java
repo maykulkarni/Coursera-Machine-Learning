@@ -1,7 +1,9 @@
 package Exercise1_Linear_Regression;
 
 import Utils.Matrix;
+import Utils.MiscUtils;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +19,7 @@ public class LinearRegressor {
      * value.
      * Prediction = \sum (Pi * Xi)
      */
-    private Map<String, Double> predictors;
+    private Map<String, Integer> predictors;
 
     /**
      * List of the columns
@@ -49,6 +51,7 @@ public class LinearRegressor {
      */
     private double epsilon = 1e-5;
 
+    private double[] predictorArray;
 
     private Matrix matrix;
 
@@ -67,18 +70,34 @@ public class LinearRegressor {
      *
      * @param inputMatrix matrix to be trained on
      */
+    // FIXME Error is insanely high
     public void fit(Matrix inputMatrix) {
         this.matrix = inputMatrix;
         this.dependentVariable = matrix.dependentVariable;
         int indepVarSize = matrix.values.size() - 1;
         predictors = new HashMap<>(indepVarSize + 1);
+        predictorArray = new double[indepVarSize + 1];
         columnList = matrix.columnList;
         rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
-        for (String str : columnList) predictors.put(str, 0d);
-        predictors.put("def", 0d);
+        for (int i = 0, size = 0; i < columnList.size(); i++) {
+            if (!columnList.get(i).equals(dependentVariable)) {
+                predictors.put(columnList.get(i), size + 1);
+                size++;
+            }
+        }
+        predictors.put("def", 0);
         predictors.remove(dependentVariable);
-        System.out.println("Dependent Variable : " + dependentVariable);
+        MiscUtils.line();
+        System.out.println("Dependent variable : " + dependentVariable);
         System.out.println("Predictors " + predictors);
+        System.out.println(Arrays.toString(predictorArray));
+        System.out.println(predictors);
+        System.out.println("Initial Cost : " + costFunction());
+        System.out.println("Gradient at initial theta");
+        for (String col : predictors.keySet()) {
+            System.out.println(col + " : " + gradient(col));
+        }
+        MiscUtils.line();
         gradientDescent();
     }
 
@@ -106,9 +125,8 @@ public class LinearRegressor {
      */
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
-        tuple.put("def", 1d);
         for (String str : predictors.keySet()) {
-            prediction += predictors.get(str) * tuple.get(str);
+            prediction += predictorArray[predictors.get(str)] * tuple.get(str);
         }
         return prediction;
     }
@@ -116,7 +134,7 @@ public class LinearRegressor {
     /**
      * Calculates the gradient
      * @param col       column to calculate on
-     * @return
+     * @return          gradient
      */
     private double gradient(String col) {
         double sum = 0;
@@ -133,22 +151,29 @@ public class LinearRegressor {
      * Apply gradient descent
      */
     public void gradientDescent() {
-        alpha = 0.01;
-        Map<String, Object> temp = new HashMap<>();
         long iteration = 0;
-        double[] pred = new double[predictors.keySet().size()];
+        double currentCost;
+        double previousCost = Double.MAX_VALUE;
 
-        while (costFunction() >= epsilon && iteration < maxNumberOfIterations) {
+        while ((currentCost = costFunction()) >= epsilon
+                    && iteration < maxNumberOfIterations
+                    && (previousCost - currentCost) > 1e-8) {
+            previousCost = currentCost;
+            System.out.println("CC: " + currentCost);
             for (String col : predictors.keySet()) {
-                temp.put(col, predictors.get(col) - alpha * gradient(col));
+                int index = predictors.get(col);
+                predictorArray[index] = predictorArray[index] - alpha*gradient(col);
             }
-            predictors = (Map) ((HashMap) temp).clone();
             iteration++;
         }
         System.out.println("Iterations : " + iteration);
         System.out.println(predictors);
+        for (String col : predictors.keySet()) {
+            System.out.println(col + " : " + predictorArray[predictors.get(col)]);
+        }
         System.out.println("Error after descending: ");
         System.out.println(costFunction());
+        System.out.println(Arrays.toString(predictorArray));
     }
 }
 
