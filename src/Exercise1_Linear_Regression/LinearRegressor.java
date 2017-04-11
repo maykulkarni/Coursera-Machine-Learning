@@ -57,6 +57,7 @@ public class LinearRegressor {
      */
     private String dependentVariable;
 
+
     public static void main(String[] args) {
         new LinearRegressor().costFunction();
     }
@@ -133,8 +134,9 @@ public class LinearRegressor {
      */
     public void gradientDescent() {
         alpha = 0.01;
-        Map<String, Object> temp = new HashMap<>(rowCount);
+        Map<String, Object> temp = new HashMap<>();
         long iteration = 0;
+        double[] pred = new double[predictors.keySet().size()];
 
         while (costFunction() >= epsilon && iteration < maxNumberOfIterations) {
             for (String col : predictors.keySet()) {

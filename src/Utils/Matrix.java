@@ -27,9 +27,12 @@ public class Matrix {
 
     public String dependentVariable;
     private long rowSize = 0;
+    private Map<String, Object> tuple;
 
     public Matrix() {
         values = new HashMap<>();
+        tuple = new HashMap<>();
+        tuple.put("def", "1");
     }
 
     /**
@@ -95,7 +98,6 @@ public class Matrix {
      * @return          row of a matrix
      */
     public Map<String, Object> tuple(int row) {
-        Map<String, Object> tuple = new HashMap<>();
         for (String str : columnList) {
             tuple.put(str, values.get(str).get(row));
         }
