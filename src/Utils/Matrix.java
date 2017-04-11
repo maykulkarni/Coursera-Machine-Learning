@@ -43,13 +43,13 @@ public class Matrix {
         Matrix matrix = new Matrix();
         String absPath = new java.io.File(".").getCanonicalPath();
         BufferedReader br = new BufferedReader(new FileReader(absPath + filePath));
-        String currLine = "";
+        String currLine;
         String[] firstLine = br.readLine().split(",");
         for (int i = 0; i < firstLine.length; i++)
             matrix.values.put(String.valueOf(i), new ArrayList<>());
         for (int i = 0; i < firstLine.length; i++)
             matrix.values.get(String.valueOf(i)).add(firstLine[i]);
-        long rowSize = 0;
+        long rowSize = 1;
         while ((currLine = br.readLine()) != null) {
             String[] splitLine = currLine.split(",");
             for (int i = 0; i < splitLine.length; i++)

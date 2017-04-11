@@ -26,8 +26,8 @@ public class Normalizer {
      * Uses Z-Score normalization and applies on every
      * column of the matrix
      *
-     * @param matrix input matrix
-     * @return Normalized matrix
+     * @param matrix        input matrix
+     * @return              Normalized matrix
      */
     public Matrix fit(Matrix matrix) {
         for (String columns : matrix.columnList)
@@ -38,7 +38,7 @@ public class Normalizer {
                 meanMap.put(columns, mean);
                 standardDeviationMap.put(columns, standardDeviation);
                 List<Object> modifiedColumn = currentColumn.stream()
-                        .map((x) -> ((double) x - mean) / standardDeviation)
+                        .map(x -> ((double) x - mean) / standardDeviation)
                         .collect(Collectors.toList());
                 matrix.values.replace(columns, currentColumn, modifiedColumn);
             }
@@ -50,7 +50,7 @@ public class Normalizer {
      * Calculates Standard Deviation
      * @param currentColumn column to be calculated on
      * @param mean          mean of the current column
-     * @return standard deviation
+     * @return              standard deviation
      */
     private double standardDeviation(List currentColumn, double mean) {
         DoubleAdder da = new DoubleAdder();
@@ -63,7 +63,7 @@ public class Normalizer {
     /**
      * Calculates mean
      * @param currentColumn column to be calculated on
-     * @return mean
+     * @return              mean
      */
     private double mean(List currentColumn) {
         double sum = currentColumn.stream()
