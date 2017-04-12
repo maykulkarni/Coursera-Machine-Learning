@@ -1,8 +1,6 @@
 package Utils;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +25,22 @@ public class Matrix {
     public List<String> columnList;
 
     public String dependentVariable;
-    private long rowSize = 0;
+    public long rowCount = 0;
+    private List<String> independentColumns;
 
     public boolean isNumericalData = false;
 
     public Matrix() {
         values = new HashMap<>();
+    }
+
+    public List<String> getIndependentColumns() {
+        if (independentColumns == null) {
+            if (dependentVariable == null) throw new IllegalStateException("Dependent variable not set.");
+            independentColumns = new ArrayList<>(columnList);
+            independentColumns.remove(dependentVariable);
+        }
+        return independentColumns;
     }
 
     /**
@@ -60,7 +68,7 @@ public class Matrix {
             rowSize++;
         }
         matrix.columnList = new ArrayList<>(matrix.values.keySet());
-        matrix.rowSize = rowSize;
+        matrix.rowCount = rowSize;
         return matrix;
     }
 
@@ -88,8 +96,8 @@ public class Matrix {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Row size : ").append(rowSize).append("\n");
-        for (int i = 0; i < rowSize; i++) {
+        sb.append("Row size : ").append(rowCount).append("\n");
+        for (int i = 0; i < rowCount; i++) {
             for (String str : columnList) {
                 String currValue = String.valueOf(get(str, i));
                 sb.append(currValue.length() > 13 ? currValue.substring(0, 13) : currValue).append("\t");
@@ -127,7 +135,7 @@ public class Matrix {
      * Get a particular value in matrix
      * indexed by row and column
      * @param column    column name (String)
-     * @param index     integer index
+     * @param index     row integer index
      * @return          value at the column and row
      */
     public Object get(String column, int index) {
@@ -142,6 +150,30 @@ public class Matrix {
     public void setDependentVariable(String dependentVariable) {
         if (!values.keySet().contains(dependentVariable)) throw new RuntimeException("unknown Dependent variable");
         this.dependentVariable = dependentVariable;
+    }
+
+    public void addColumn(String columnName, List vals) {
+        if (values.keySet().contains(columnName))
+            throw new RuntimeException("Can't add " + columnName + ". Value already present");
+        System.out.println("Added column : " + columnName);
+        columnList.add(columnName);
+        values.put(columnName, vals);
+    }
+
+    public void addNDegrees(int n) {
+        attemptNumericalConversion();
+//        List<>
+    }
+
+    public void toCSV(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
+        PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+        for (int i = 0; i < this.rowCount; i++) {
+            for (int j = 0; j < columnList.size(); j++) {
+                if (j == columnList.size() - 1) writer.println(this.get(columnList.get(j), i));
+                writer.print(this.get(columnList.get(j), i) + ",");
+            }
+        }
+        writer.close();
     }
 }
 

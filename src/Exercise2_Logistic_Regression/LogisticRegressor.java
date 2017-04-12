@@ -119,6 +119,22 @@ public class LogisticRegressor {
         return -error / rowCount;
     }
 
+
+    public double costFunctionRegularised() {
+        double error = 0;
+        double predictorSquared = 0;
+        for (int i = 0; i < rowCount; i++) {
+            double actual = (double) matrix.get(dependentVariable, i);
+            double prediction = predict(matrix.tuple(i));
+            error += actual == 1D ?  Math.log(prediction) : Math.log(1 - prediction);
+        }
+        for (int i = 0; i < predictorArray.length; i++) {
+            predictorSquared += Math.pow(predictorArray[i], 2);
+        }
+        return (-error / rowCount) + (lambda/(2*rowCount)) * predictorSquared;
+    }
+
+
     private double sigmoid(double value) {
         return 1D/(1D + Math.exp(-value));
     }
