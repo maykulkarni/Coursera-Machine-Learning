@@ -28,13 +28,11 @@ public class Matrix {
 
     public String dependentVariable;
     private long rowSize = 0;
-    private Map<String, Double> tuple;
+
     public boolean isNumericalData = false;
 
     public Matrix() {
         values = new HashMap<>();
-        tuple = new HashMap<>();
-        tuple.put("def", 1d);
     }
 
     /**
@@ -75,8 +73,9 @@ public class Matrix {
                         .map(Double::parseDouble)
                         .collect(Collectors.toList());
                 values.replace(col, currCol, modifiedList);
-                isNumericalData = true;
             }
+            isNumericalData = true;
+            System.out.println("Numerical conversion successful");
         } catch (Exception e) {
             System.err.println("Numerical Conversion failed, some operation cannot be permitted");
         }
@@ -116,6 +115,8 @@ public class Matrix {
      * @return          row of a matrix
      */
     public Map<String, Double> tuple(int row) {
+        Map<String, Double> tuple = new HashMap<>();
+        tuple.put("def", 1d);
         for (String str : columnList) {
             tuple.put(str, (double) values.get(str).get(row));
         }

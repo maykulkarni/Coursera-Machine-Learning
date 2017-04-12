@@ -14,11 +14,16 @@ import java.util.Map;
  */
 public class LogisticRegressor {
     /**
-     * Holds the coefficient of every input
-     * value.
-     * Prediction = \sum (Pi * Xi)
+     * Holds the index of predictors
+     * stored in predictor array
      */
-    private Map<String, Integer> predictors;
+    private Map<String, Integer> predictorIndex;
+
+    /**
+     * Holds the prediction coefficients.
+     * Prediction = \sum (Coeff_i * X_i)
+     */
+    private double[] predictorArray;
 
     /**
      * List of the columns
@@ -65,8 +70,6 @@ public class LogisticRegressor {
 
     private HashMap<String, Integer> columnIndex;
 
-    private double[] predictorArray;
-
     public LogisticRegressor() {
         columnIndex = new HashMap<>();
     }
@@ -81,19 +84,19 @@ public class LogisticRegressor {
         this.matrix = inputMatrix;
         this.dependentVariable = matrix.dependentVariable;
         int indepVarSize = matrix.values.size() - 1;
-        predictors = new HashMap<>(indepVarSize + 1);
+        predictorIndex = new HashMap<>(indepVarSize + 1);
         predictorArray = new double[indepVarSize + 1];
         columnList = matrix.columnList;
         rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
-        predictors.put("def", 0);
-        for (int i = 0; i < columnList.size(); i++) predictors.put(columnList.get(i), i + 1);
-        predictors.remove(dependentVariable);
+        predictorIndex.put("def", 0);
+        for (int i = 0; i < columnList.size(); i++) predictorIndex.put(columnList.get(i), i + 1);
+        predictorIndex.remove(dependentVariable);
         MiscUtils.line();
         System.out.println("Dependent variable : " + dependentVariable);
-        System.out.println("Predictors " + predictors);
+        System.out.println("Predictors " + predictorIndex);
         System.out.println("Initial Cost : " + costFunction());
         System.out.println("Gradient at initial theta");
-        for (String col : predictors.keySet()) {
+        for (String col : predictorIndex.keySet()) {
             System.out.println(col + " : " + gradient(col));
         }
         MiscUtils.line();
@@ -102,7 +105,7 @@ public class LogisticRegressor {
 
     /**
      * Calculates the error with current values of
-     * predictors
+     * predictorIndex
      *
      * @return Sigmoid error
      */
@@ -128,8 +131,8 @@ public class LogisticRegressor {
      */
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
-        for (String str : predictors.keySet()) {
-            prediction += predictorArray[predictors.get(str)] * tuple.get(str);
+        for (String str : predictorIndex.keySet()) {
+            prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
         }
         return sigmoid(prediction);
     }
@@ -157,21 +160,22 @@ public class LogisticRegressor {
         long iteration = 0;
         double currentCost;
         double previousCost = Double.MAX_VALUE;
-
+        double[] temp = new double[predictorArray.length];
         while ((currentCost = costFunction()) >= epsilon
                 && iteration < maxNumberOfIterations
                 && previousCost - currentCost > 1e-8) {
             previousCost = currentCost;
-            for (String col : predictors.keySet()) {
-                int index = predictors.get(col);
-                predictorArray[index] = predictorArray[index] - alpha*gradient(col);
+            for (String col : predictorIndex.keySet()) {
+                int index = predictorIndex.get(col);
+                temp[index] = predictorArray[index] - alpha*gradient(col);
             }
+            System.arraycopy(temp, 0, predictorArray, 0, predictorArray.length);
             iteration++;
         }
         System.out.println("Iterations : " + iteration);
-        System.out.println(predictors);
-        for (String col : predictors.keySet()) {
-            System.out.println(col + " : " + predictorArray[predictors.get(col)]);
+        System.out.println(predictorIndex);
+        for (String col : predictorIndex.keySet()) {
+            System.out.println(col + " : " + predictorArray[predictorIndex.get(col)]);
         }
         System.out.println("Error after descending: ");
         System.out.println(costFunction());
