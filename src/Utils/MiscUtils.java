@@ -21,7 +21,7 @@ public class MiscUtils {
     }
 
     public static Matrix addNDegrees(Matrix matrix, int power) {
-        List<String> columns = matrix.getIndependentColumns();
+        List<String> columns = new ArrayList<>(matrix.getIndependentColumns());
         System.out.println("Indep cols");
         System.out.println(columns);
         Map<String, Integer> columnIndex = new HashMap<>();
@@ -43,19 +43,18 @@ public class MiscUtils {
             } else {
                 powerMatrix[N - 1]++;
             }
-            addOverMatrix(matrix, powerMatrix, columnIndex);
+            addOverMatrix(matrix, powerMatrix, columnIndex, columns);
         }
         return matrix;
     }
 
-    private static void addOverMatrix(Matrix matrix, int[] powerMatrix, Map<String, Integer> columnIndex) {
+    private static void addOverMatrix(Matrix matrix, int[] powerMatrix, Map<String, Integer> columnIndex, List<String> columns) {
         List<Double> newColumn = new ArrayList<>();
         for (int i = 0; i < matrix.rowCount; i++) {
-            double val = 0;
-            for(String col : matrix.getIndependentColumns()) {
-                val += powerMatrix[columnIndex.get(col)] == 0 ?
-                        0 :
-                        Math.pow((double)matrix.get(col, i), powerMatrix[columnIndex.get(col)]);
+            double val = 1;
+            for(String col : columns) {
+                if (!columnIndex.keySet().contains(col)) throw new RuntimeException("Value " + col + " not in CI");
+                val *= Math.pow((double)matrix.get(col, i), powerMatrix[columnIndex.get(col)]);
             }
             newColumn.add(val);
         }
@@ -70,7 +69,7 @@ public class MiscUtils {
         Matrix matrix = Matrix.fromCSV("\\Files\\test.txt");
         matrix.setDependentVariable("2");
         matrix.attemptNumericalConversion();
-        addNDegrees(matrix, 3);
+        addNDegrees(matrix, 6);
         matrix.toCSV("text-my.csv");
     }
 }

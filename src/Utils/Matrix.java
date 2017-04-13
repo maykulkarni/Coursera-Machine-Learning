@@ -139,6 +139,8 @@ public class Matrix {
      * @return          value at the column and row
      */
     public Object get(String column, int index) {
+        if (!values.keySet().contains(column) || values.get(column).size() <= index)
+            throw new RuntimeException("Error fetching column : " + column + " row : " + index);
         return values.get(column).get(index);
     }
 
@@ -155,14 +157,14 @@ public class Matrix {
     public void addColumn(String columnName, List vals) {
         if (values.keySet().contains(columnName))
             throw new RuntimeException("Can't add " + columnName + ". Value already present");
-        System.out.println("Added column : " + columnName);
         columnList.add(columnName);
+        independentColumns.add(columnName);
         values.put(columnName, vals);
     }
 
     public void addNDegrees(int n) {
-        attemptNumericalConversion();
-//        List<>
+        if (!isNumericalData) attemptNumericalConversion();
+        MiscUtils.addNDegrees(this, n);
     }
 
     /**
