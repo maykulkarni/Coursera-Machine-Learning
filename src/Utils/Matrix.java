@@ -90,7 +90,7 @@ public class Matrix {
     }
 
 
-    /**
+    /** todo fix this noob toString
      * Print complete matrix
      */
     @Override
@@ -165,12 +165,25 @@ public class Matrix {
 //        List<>
     }
 
+    /**
+     * Saves matrix to CSV
+     * @param fileName fileName to save
+     * @throws FileNotFoundException irrelevant
+     * @throws UnsupportedEncodingException uses UTF-8 by default, so nothing to worry
+     */
     public void toCSV(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
         PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+        System.out.println(rowCount);
+        System.out.println(columnList.size());
+        columnList.forEach((x) -> writer.print(x + ','));
+        writer.println();
         for (int i = 0; i < this.rowCount; i++) {
             for (int j = 0; j < columnList.size(); j++) {
                 if (j == columnList.size() - 1) writer.println(this.get(columnList.get(j), i));
-                writer.print(this.get(columnList.get(j), i) + ",");
+                else {
+                    writer.print(this.get(columnList.get(j), i));
+                    writer.print(',');
+                }
             }
         }
         writer.close();

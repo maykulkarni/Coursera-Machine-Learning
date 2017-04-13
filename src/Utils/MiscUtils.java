@@ -11,6 +11,7 @@ import java.util.Map;
  * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
  */
 public class MiscUtils {
+
     public static void line() {
         System.out.println();
         for (int i = 0; i < 50; i++) {
@@ -18,6 +19,7 @@ public class MiscUtils {
         }
         System.out.println();
     }
+
     public static Matrix addNDegrees(Matrix matrix, int power) {
         List<String> columns = matrix.getIndependentColumns();
         System.out.println("Indep cols");
@@ -51,7 +53,9 @@ public class MiscUtils {
         for (int i = 0; i < matrix.rowCount; i++) {
             double val = 0;
             for(String col : matrix.getIndependentColumns()) {
-                val += Math.pow((double)matrix.get(col, i), powerMatrix[columnIndex.get(col)]);
+                val += powerMatrix[columnIndex.get(col)] == 0 ?
+                        0 :
+                        Math.pow((double)matrix.get(col, i), powerMatrix[columnIndex.get(col)]);
             }
             newColumn.add(val);
         }
@@ -61,6 +65,7 @@ public class MiscUtils {
                          .append("^").append(powerMatrix[i]);
         matrix.addColumn(newColumnName.toString(), newColumn);
     }
+
     public static void main(String[] args) throws IOException {
         Matrix matrix = Matrix.fromCSV("\\Files\\test.txt");
         matrix.setDependentVariable("2");
