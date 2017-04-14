@@ -30,6 +30,7 @@ public class Normalizer {
      * @return              Normalized matrix
      */
     public Matrix fit(Matrix matrix) {
+        matrix.attemptNumericalConversion();
         for (String columns : matrix.columnList)
             if (!columns.equals(matrix.dependentVariable)) {
                 List<Double> currentColumn = matrix.getColumn(columns);

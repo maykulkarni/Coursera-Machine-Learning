@@ -90,7 +90,7 @@ public class LinearRegressor extends Regressor{
                 int index = predictorIndex.get(col);
                 temp[index] = predictorArray[index] - alpha*gradient(col);
             }
-            for (int i = 0; i < predictorArray.length; i++) predictorArray[i] = temp[i];
+            System.arraycopy(temp, 0, predictorArray, 0, predictorArray.length);
             iteration++;
         }
         this.iterations = iteration;

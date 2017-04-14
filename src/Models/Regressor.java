@@ -80,9 +80,9 @@ public abstract class Regressor {
     }
 
     public void result() {
-        MiscUtils.line();
         System.out.println("Iterations: " + iterations);
         System.out.println("Cost after descending: " + costFunction());
+        MiscUtils.line();
     }
 
 
@@ -106,7 +106,7 @@ public abstract class Regressor {
         predictorIndex.remove(dependentVariable);
     }
 
-    void printInitialParams() {
+    public void printInitialParams() {
         MiscUtils.line();
         System.out.println("Alpha: " + alpha);
         System.out.println("Regularization parameter(Lambda): " + lambda);

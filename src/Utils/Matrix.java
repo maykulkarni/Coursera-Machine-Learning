@@ -73,19 +73,21 @@ public class Matrix {
     }
 
     public void attemptNumericalConversion() {
-        System.out.println("Attempting to convert data to numerical");
-        try {
-            for (String col : columnList) {
-                List<String> currCol = values.get(col);
-                List<Double> modifiedList = currCol.stream()
-                        .map(Double::parseDouble)
-                        .collect(Collectors.toList());
-                values.replace(col, currCol, modifiedList);
+        if (!isNumericalData) {
+            System.out.println("Attempting to convert data to numerical");
+            try {
+                for (String col : columnList) {
+                    List<String> currCol = values.get(col);
+                    List<Double> modifiedList = currCol.stream()
+                            .map(Double::parseDouble)
+                            .collect(Collectors.toList());
+                    values.replace(col, currCol, modifiedList);
+                }
+                isNumericalData = true;
+                System.out.println("Numerical conversion successful");
+            } catch (Exception e) {
+                System.err.println("Numerical Conversion failed, some operation cannot be permitted");
             }
-            isNumericalData = true;
-            System.out.println("Numerical conversion successful");
-        } catch (Exception e) {
-            System.err.println("Numerical Conversion failed, some operation cannot be permitted");
         }
     }
 
