@@ -3,9 +3,10 @@ package Models;
 
 import Utils.Matrix;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import static Utils.Functions.sigmoid;
 
 /**
  * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
@@ -22,6 +23,7 @@ public class LogisticRegressor extends Regressor{
      *
      * @param inputMatrix matrix to be trained on
      */
+    @Override
     public void fit(Matrix inputMatrix) {
         init(inputMatrix);
         printInitialParams();
@@ -34,6 +36,7 @@ public class LogisticRegressor extends Regressor{
      *
      * @return Sigmoid error
      */
+    @Override
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
@@ -44,25 +47,6 @@ public class LogisticRegressor extends Regressor{
         return -error / rowCount;
     }
 
-
-    public double costFunctionRegularised() {
-        double error = 0;
-        double predictorSquared = 0;
-        for (int i = 0; i < rowCount; i++) {
-            double actual = (double) matrix.get(dependentVariable, i);
-            double prediction = predict(matrix.tuple(i));
-            error += actual == 1D ?  Math.log(prediction) : Math.log(1 - prediction);
-        }
-        for (int i = 0; i < predictorArray.length; i++) {
-            predictorSquared += Math.pow(predictorArray[i], 2);
-        }
-        return (-error / rowCount) + (lambda/(2*rowCount)) * predictorSquared;
-    }
-
-
-    private double sigmoid(double value) {
-        return 1D/(1D + Math.exp(-value));
-    }
 
     /**
      * Predicts on a given row using sigmoid function
@@ -113,13 +97,5 @@ public class LogisticRegressor extends Regressor{
             System.arraycopy(temp, 0, predictorArray, 0, predictorArray.length);
             iteration++;
         }
-        System.out.println("Iterations : " + iteration);
-        System.out.println(predictorIndex);
-        for (String col : predictorIndex.keySet()) {
-            System.out.println(col + " : " + predictorArray[predictorIndex.get(col)]);
-        }
-        System.out.println("Error after descending: ");
-        System.out.println(costFunction());
-        System.out.println(Arrays.toString(predictorArray));
     }
 }

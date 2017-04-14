@@ -54,10 +54,6 @@ public abstract class Regressor {
      */
     double epsilon = 1e-5;
 
-    /**
-     * Regularization parameter
-     */
-    double lambda = 0.1;
 
     long iterations = 0;
 
@@ -75,13 +71,20 @@ public abstract class Regressor {
 
     public abstract void fit(Matrix inputMatrix);
 
+    public abstract double predict(Map<String, Double> tuple);
+
     public void setAlpha(double newAlpha) {
         this.alpha = newAlpha;
     }
 
+    public void setMaxNumberOfIterations(int maxNumberOfIterations) { this.maxNumberOfIterations = maxNumberOfIterations;}
+
     public void result() {
         System.out.println("Iterations: " + iterations);
         System.out.println("Cost after descending: " + costFunction());
+        for (String params : predictorIndex.keySet()) {
+
+        }
         MiscUtils.line();
     }
 
@@ -109,7 +112,6 @@ public abstract class Regressor {
     public void printInitialParams() {
         MiscUtils.line();
         System.out.println("Alpha: " + alpha);
-        System.out.println("Regularization parameter(Lambda): " + lambda);
         System.out.println("Dependent variable : " + dependentVariable);
         System.out.println("Initial Cost : " + costFunction());
         MiscUtils.line();
