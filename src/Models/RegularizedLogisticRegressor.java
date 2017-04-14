@@ -22,6 +22,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         this.lambda = lambda;
     }
 
+    /**
+     * Calculates the error with current values of
+     * predictorIndex
+     *
+     * @return Mean Squared Error with Regularization
+     */
     @Override
     public double costFunction() {
         double error = 0;
@@ -38,6 +44,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         return (-error / rowCount) + (lambda/(2*rowCount)) * predictorSquared;
     }
 
+    /**
+     * Train Logistic regression using Gradient Descent
+     * with Regularization
+     *
+     * @param inputMatrix matrix to be trained on
+     */
     @Override
     public void fit(Matrix inputMatrix) {
         init(inputMatrix);
@@ -45,6 +57,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         gradientDescent();
     }
 
+    /**
+     * Predicts on a given row using sigmoid function
+     *
+     * @param tuple input row
+     * @return prediction value
+     */
     @Override
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
@@ -54,6 +72,9 @@ public class RegularizedLogisticRegressor extends Regressor{
         return sigmoid(prediction);
     }
 
+    /**
+     * Applies gradient descent
+     */
     private void gradientDescent() {
         long iteration = 0;
         double currentCost;
