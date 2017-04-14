@@ -22,6 +22,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         this.lambda = lambda;
     }
 
+    /**
+     * Calculates the error with current values of
+     * predictorIndex
+     *
+     * @return Mean Squared Error with Regularization
+     */
     @Override
     public double costFunction() {
         double error = 0;
@@ -38,6 +44,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         return (-error / rowCount) + (lambda/(2*rowCount)) * predictorSquared;
     }
 
+    /**
+     * Train Logistic regression using Gradient Descent
+     * with Regularization
+     *
+     * @param inputMatrix matrix to be trained on
+     */
     @Override
     public void fit(Matrix inputMatrix) {
         init(inputMatrix);
@@ -45,6 +57,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         gradientDescent();
     }
 
+    /**
+     * Predicts on a given row using sigmoid function
+     *
+     * @param tuple input row
+     * @return prediction value
+     */
     @Override
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
@@ -54,6 +72,9 @@ public class RegularizedLogisticRegressor extends Regressor{
         return sigmoid(prediction);
     }
 
+    /**
+     * Applies gradient descent
+     */
     private void gradientDescent() {
         long iteration = 0;
         double currentCost;
@@ -73,6 +94,12 @@ public class RegularizedLogisticRegressor extends Regressor{
         this.iterations = iteration;
     }
 
+    /**
+     * Calculates the gradient with Regularization
+     *
+     * @param col       column to calculate on
+     * @return          gradient
+     */
     private double gradient(String col) {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
@@ -88,17 +115,17 @@ public class RegularizedLogisticRegressor extends Regressor{
             return (sum / rowCount) + (lambda / rowCount) * predictorArray[predictorIndex.get(col)];
     }
 
+    /**
+     * Initial params + lambda
+     */
     @Override
     public void printInitialParams() {
         MiscUtils.line();
         System.out.println("Alpha: " + alpha);
-        System.out.println("Regularization parameter(Lambda): " + lambda);
+        System.out.println("Regularization parameter (Lambda): " + lambda);
         System.out.println("Dependent variable : " + dependentVariable);
         System.out.println("Initial Cost : " + costFunction());
         MiscUtils.line();
     }
 
-    public static void main(String[] args) {
-
-    }
 }
