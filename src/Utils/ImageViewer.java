@@ -3,10 +3,7 @@ package Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -18,16 +15,25 @@ public class ImageViewer {
 
     public static int[][] completeGrid() throws IOException {
         int[][] completeGrid = new int[200][200];
-        String path = "C:\\Users\\kulkarni_my\\Desktop\\Coursera-Machine-Learning\\Files\\Exercise 3\\character_data.csv";
-        BufferedReader br = new BufferedReader(new FileReader(path));
+        String inputData = "C:\\Users\\kulkarni_my\\Desktop\\Coursera-Machine-Learning\\Files\\Exercise 3\\character_data.csv";
+        String predictions = "C:\\Users\\kulkarni_my\\Desktop\\Coursera-Machine-Learning\\Files\\Exercise 3\\output.csv";
+        BufferedReader inputReader = new BufferedReader(new FileReader(inputData));
+        BufferedReader predictionReader = new BufferedReader(new FileReader(predictions));
+        PrintWriter writer = new PrintWriter("C:\\Users\\kulkarni_my\\Desktop\\Coursera-Machine-Learning\\Files\\Exercise 3\\pixelData.csv");
         int[] jumper = createJumper(100, 4900);
         int jumperSize = 0;
         for(int h = 0; h < 10; h++) {
             for (int i = 0; i < 10; i++, jumperSize++) {
                 for (int j = 0; j < jumper[jumperSize]; j++) {
-                    br.readLine();
+                    inputReader.readLine();
+                    predictionReader.readLine();
                 }
-                String[] splitLine = br.readLine().split(",");
+                String currLine = inputReader.readLine();
+                writer.print(currLine + ",");
+                String[] splitLine = currLine.split(",");
+                String output = predictionReader.readLine();
+                writer.println(output);
+                System.out.println(output);
                 int stringCounter = 0;
                 int offsetX = h*20;
                 int offsetY = i*20;
@@ -38,6 +44,7 @@ public class ImageViewer {
                 }
             }
         }
+        writer.close();
         return completeGrid;
     }
 
@@ -57,17 +64,11 @@ public class ImageViewer {
     }
 
     public static void main(String[] args) throws IOException {
-        EventQueue.invokeLater(() -> {
-            ImageFrame imageFrame = null;
-            try {
-                imageFrame = new ImageFrame(completeGrid());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            imageFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            imageFrame.setResizable(false);
-            imageFrame.setVisible(true);
-        });
+        ImageFrame imageFrame = null;
+        imageFrame = new ImageFrame(completeGrid());
+        imageFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        imageFrame.setResizable(false);
+        imageFrame.setVisible(true);
     }
 
     public static Image createImage(int[][] arr) {
@@ -79,9 +80,9 @@ public class ImageViewer {
             for(int x = 0; x < width; x++){
                 int a = 235; //alpha
                 int ans = arr[x][y];
-                int r, g, b = ans == 0 ? 255 : ans; //arr[x][y] < 0 ? ans + 20 : ans;
+                int r, g, b = ans == 0 ? 255 : ans;
                 r = g = b;
-                int p = (a<<24) | (r<<16) | (g<<8) | b; //pixel
+                int p = (a<<24) | (r<<16) | (g<<8) | b;
                 img.setRGB(x, y, p);
             }
         }
@@ -91,8 +92,8 @@ public class ImageViewer {
 
 class ImageFrame extends JFrame{
     public ImageFrame(int[][] arr) {
-        setTitle("Hello !");
-        setSize(210, 210);
+        setTitle("Digits");
+        setSize(210, 240);
         add(new ImageComponent(arr));
     }
 }
