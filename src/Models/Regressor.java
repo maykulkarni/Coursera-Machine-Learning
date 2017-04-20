@@ -4,6 +4,8 @@ package Models;
 import Utils.Matrix;
 import Utils.MiscUtils;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ public abstract class Regressor {
     /**
      * List of the columns
      */
-    List<String> columnList;
+    List<String> independentColumnList;
 
     /**
      * Number of rows in the matrix
@@ -44,7 +46,7 @@ public abstract class Regressor {
      * States maximum number of iterations in
      * gradient descent
      */
-    long maxNumberOfIterations = 20000;
+    long maxNumberOfIterations = 2000;
 
     /**
      * Minimum accuracy to be achieved before
@@ -71,7 +73,7 @@ public abstract class Regressor {
 
     public abstract void fit(Matrix inputMatrix);
 
-    public abstract double predict(Map<String, Double> tuple);
+    public abstract double predict(int row);
 
     public void setAlpha(double newAlpha) {
         this.alpha = newAlpha;
@@ -82,28 +84,28 @@ public abstract class Regressor {
     public void result() {
         System.out.println("Iterations: " + iterations);
         System.out.println("Cost after descending: " + costFunction());
-        for (String params : predictorIndex.keySet()) {
-
-        }
+//        for (String params : predictorIndex.keySet()) {
+//            System.out.println(params + " : " + predictorArray[predictorIndex.get(params)]);
+//        }
         MiscUtils.line();
     }
 
 
     void init(Matrix inputMatrix) {
         this.matrix = inputMatrix;
-        this.dependentVariable = matrix.dependentVariable;
+        this.dependentVariable = matrix.getDependentVariable();
         int indepVarSize = matrix.values.size() - 1;
         predictorIndex = new HashMap<>(indepVarSize + 1);
         predictorArray = new double[indepVarSize + 2];
-        columnList = matrix.columnList;
+        independentColumnList = matrix.getIndependentColumns();
         inputMatrix.attemptNumericalConversion();
         rowCount = matrix.values.get(matrix.values.keySet().iterator().next()).size();
         // first value in the predictorArray will be the
         // coefficient for default value, hence the index
         // of default will be 0
         predictorIndex.put("def", 0);
-        for (int i = 0, size = 1; i < columnList.size(); i++) {
-            predictorIndex.put(columnList.get(i), size);
+        for (int i = 0, size = 1; i < independentColumnList.size(); i++) {
+            predictorIndex.put(independentColumnList.get(i), size);
             size++;
         }
         predictorIndex.remove(dependentVariable);
@@ -115,6 +117,15 @@ public abstract class Regressor {
         System.out.println("Dependent variable : " + dependentVariable);
         System.out.println("Initial Cost : " + costFunction());
         MiscUtils.line();
+    }
+
+    public void saveResultToCSV(String fileName) throws FileNotFoundException {
+        try(PrintWriter writer = new PrintWriter(fileName.endsWith("csv") ? fileName : fileName + ".csv")) {
+            for (String predictorName : predictorIndex.keySet()) {
+                writer.print(predictorName + ",");
+                writer.println(predictorArray[predictorIndex.get(predictorName)]);
+            }
+        }
     }
 
     public static void main(String[] args) {

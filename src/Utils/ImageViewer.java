@@ -33,7 +33,6 @@ public class ImageViewer {
                 String[] splitLine = currLine.split(",");
                 String output = predictionReader.readLine();
                 writer.println(output);
-                System.out.println(output);
                 int stringCounter = 0;
                 int offsetX = h*20;
                 int offsetY = i*20;

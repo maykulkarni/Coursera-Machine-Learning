@@ -32,7 +32,7 @@ public class Normalizer {
     public Matrix fit(Matrix matrix) {
         matrix.attemptNumericalConversion();
         for (String columns : matrix.columnList)
-            if (!columns.equals(matrix.dependentVariable)) {
+            if (!columns.equals(matrix.getDependentVariable())) {
                 List<Double> currentColumn = matrix.getColumn(columns);
                 double mean = mean(currentColumn);
                 double standardDeviation = standardDeviation(currentColumn, mean);

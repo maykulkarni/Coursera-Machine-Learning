@@ -4,8 +4,6 @@ package Models;
 import Utils.Matrix;
 import Utils.MiscUtils;
 
-import java.util.Map;
-
 import static Utils.Functions.sigmoid;
 
 
@@ -34,7 +32,7 @@ public class RegularizedLogisticRegressor extends Regressor{
         double predictorSquared = 0;
         for (int i = 0; i < rowCount; i++) {
             double actual = (double) matrix.get(dependentVariable, i);
-            double prediction = predict(matrix.tuple(i));
+            double prediction = predict(i);
             error += actual == 1D ?  Math.log(prediction) : Math.log(1 - prediction);
         }
         // Don't regularize 0th ("def") parameter
@@ -60,14 +58,14 @@ public class RegularizedLogisticRegressor extends Regressor{
     /**
      * Predicts on a given row using sigmoid function
      *
-     * @param tuple input row
+     * @param row input row
      * @return prediction value
      */
     @Override
-    public double predict(Map<String, Double> tuple) {
+    public double predict(int row) {
         double prediction = 0;
         for (String str : predictorIndex.keySet()) {
-            prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
+            prediction += predictorArray[predictorIndex.get(str)] * (double) matrix.get(str, row);
         }
         return sigmoid(prediction);
     }
@@ -103,7 +101,7 @@ public class RegularizedLogisticRegressor extends Regressor{
     private double gradient(String col) {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
-            double pred = predict(matrix.tuple(i));
+            double pred = predict(i);
             double actual = (double) matrix.get(dependentVariable, i);
             sum += (pred - actual)
                     * (col.equals("def") ? 1 : (double) matrix.get(col, i));

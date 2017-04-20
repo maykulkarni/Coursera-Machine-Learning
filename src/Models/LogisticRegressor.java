@@ -4,7 +4,6 @@ package Models;
 import Utils.Matrix;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static Utils.Functions.sigmoid;
 
@@ -30,6 +29,7 @@ public class LogisticRegressor extends Regressor{
         gradientDescent();
     }
 
+
     /**
      * Calculates the error with current values of
      * predictorIndex
@@ -41,9 +41,10 @@ public class LogisticRegressor extends Regressor{
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
             double actual = (double) matrix.get(dependentVariable, i);
-            double prediction = predict(matrix.tuple(i));
+            double prediction = predict(i);
             error += actual == 1D ?  Math.log(prediction) : Math.log(1 - prediction);
         }
+
         return -error / rowCount;
     }
 
@@ -51,13 +52,14 @@ public class LogisticRegressor extends Regressor{
     /**
      * Predicts on a given row using sigmoid function
      *
-     * @param tuple input row
+     * @param row input row
      * @return prediction value
      */
-    public double predict(Map<String, Double> tuple) {
+    @Override
+    public double predict(int row) {
         double prediction = 0;
         for (String str : predictorIndex.keySet()) {
-            prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
+            prediction += predictorArray[predictorIndex.get(str)] * (double) matrix.get(str, row);
         }
         return sigmoid(prediction);
     }
@@ -69,13 +71,23 @@ public class LogisticRegressor extends Regressor{
      */
     private double gradient(String col) {
         double sum = 0;
-        for (int i = 0; i < rowCount; i++) {
-            double pred = predict(matrix.tuple(i));
-            double actual = (double) matrix.get(dependentVariable, i);
-            sum += (pred - actual)
-                    * (col.equals("def") ? 1 : (double) matrix.get(col, i));
+        if (col.equals("def")) {
+            for (int i = 0; i < rowCount; i++) {
+                double pred = predict(i);
+                double actual = (double) matrix.get(dependentVariable, i);
+                sum += (pred - actual);
+            }
+            return sum / rowCount;
+        } else {
+            for (int i = 0; i < rowCount; i++) {
+                double pred = predict(i);
+                double actual = (double) matrix.get(dependentVariable, i);
+                sum += (pred - actual)
+                        * (double) matrix.get(col, i);
+            }
+
+            return sum / rowCount;
         }
-        return sum / rowCount;
     }
 
     /**
@@ -86,10 +98,12 @@ public class LogisticRegressor extends Regressor{
         double currentCost;
         double previousCost = Double.MAX_VALUE;
         double[] temp = new double[predictorArray.length];
+        System.out.println();
         while ((currentCost = costFunction()) >= epsilon
                 && iteration < maxNumberOfIterations
                 && previousCost - currentCost > 1e-8) {
             previousCost = currentCost;
+            System.out.print("\rIteration: " + iteration + " Cost: " + currentCost);
             for (String col : predictorIndex.keySet()) {
                 int index = predictorIndex.get(col);
                 temp[index] = predictorArray[index] - alpha*gradient(col);
@@ -97,5 +111,6 @@ public class LogisticRegressor extends Regressor{
             System.arraycopy(temp, 0, predictorArray, 0, predictorArray.length);
             iteration++;
         }
+        System.out.println();
     }
 }

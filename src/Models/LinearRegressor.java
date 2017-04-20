@@ -2,8 +2,6 @@ package Models;
 
 import Utils.Matrix;
 
-import java.util.Map;
-
 
 /**
  * @author Mayur Kulkarni <mayurkulkarni012@gmail.com>
@@ -34,7 +32,7 @@ public class LinearRegressor extends Regressor{
     public double costFunction() {
         double error = 0;
         for (int i = 0; i < rowCount; i++) {
-            double prediction = predict(matrix.tuple(i));
+            double prediction = predict(i);
             double actual = (double) matrix.get(dependentVariable, i);
             error += Math.pow(prediction - actual, 2);
         }
@@ -45,13 +43,13 @@ public class LinearRegressor extends Regressor{
     /**
      * Predicts on a given row
      *
-     * @param tuple input row
+     * @param row input row
      * @return prediction value
      */
-    public double predict(Map<String, Double> tuple) {
+    public double predict(int row) {
         double prediction = 0;
         for (String str : predictorIndex.keySet()) {
-            prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
+            prediction += predictorArray[predictorIndex.get(str)] * (double) matrix.get(str, row);
         }
         return prediction;
     }
@@ -65,7 +63,7 @@ public class LinearRegressor extends Regressor{
     private double gradient(String col) {
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
-            double prediction = predict(matrix.tuple(i));
+            double prediction = predict(i);
             double actual = (Double) matrix.get(dependentVariable, i);
             sum += (prediction - actual)
                     * (col.equals("def") ? 1 : (Double) matrix.get(col, i));

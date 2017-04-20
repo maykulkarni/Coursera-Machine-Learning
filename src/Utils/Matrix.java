@@ -24,8 +24,14 @@ public class Matrix {
      */
     public List<String> columnList;
 
-    public String dependentVariable;
+    private String dependentVariable;
     public long rowCount = 0;
+
+    public String getDependentVariable() {
+        if (dependentVariable == null) throw new IllegalStateException("Dependent variable not set!");
+        return dependentVariable;
+    }
+
     private List<String> independentColumns;
 
     public boolean isNumericalData = false;
@@ -35,11 +41,7 @@ public class Matrix {
     }
 
     public List<String> getIndependentColumns() {
-        if (independentColumns == null) {
-            if (dependentVariable == null) throw new IllegalStateException("Dependent variable not set.");
-            independentColumns = new ArrayList<>(columnList);
-            independentColumns.remove(dependentVariable);
-        }
+        if (independentColumns == null) throw new IllegalStateException("Independent column list null");
         return independentColumns;
     }
 
@@ -69,6 +71,9 @@ public class Matrix {
         }
         matrix.columnList = new ArrayList<>(matrix.values.keySet());
         matrix.rowCount = rowSize;
+        List<String> independentColumns = new ArrayList<>(matrix.columnList);
+        independentColumns.remove(matrix.dependentVariable);
+        matrix.independentColumns = independentColumns;
         return matrix;
     }
 
@@ -76,7 +81,8 @@ public class Matrix {
         if (!isNumericalData) {
             System.out.println("Attempting to convert data to numerical");
             try {
-                for (String col : columnList) {
+                System.out.println(getIndependentColumns());
+                for (String col : getIndependentColumns()) {
                     List<String> currCol = values.get(col);
                     List<Double> modifiedList = currCol.stream()
                             .map(Double::parseDouble)
@@ -86,7 +92,8 @@ public class Matrix {
                 isNumericalData = true;
                 System.out.println("Numerical conversion successful");
             } catch (Exception e) {
-                System.err.println("Numerical Conversion failed, some operation cannot be permitted");
+                System.err.println("Numerical Conversion failed, some operations cannot be permitted");
+                e.printStackTrace();
             }
         }
     }
@@ -114,24 +121,10 @@ public class Matrix {
      * @param columnName    column name
      * @return              List of values
      */
-    public List<Double> getColumn(String columnName) {
+    public List getColumn(String columnName) {
         return values.get(columnName);
     }
 
-
-    /**
-     * Returns a row in the matrix
-     * @param row       row index
-     * @return          row of a matrix
-     */
-    public Map<String, Double> tuple(int row) {
-        Map<String, Double> tuple = new HashMap<>();
-        tuple.put("def", 1d);
-        for (String str : columnList) {
-            tuple.put(str, (double) values.get(str).get(row));
-        }
-        return tuple;
-    }
 
     /**
      * Get a particular value in matrix
@@ -141,6 +134,7 @@ public class Matrix {
      * @return          value at the column and row
      */
     public Object get(String column, int index) {
+        if (column.equals("def")) return 1d;
         if (!values.keySet().contains(column) || values.get(column).size() <= index)
             throw new RuntimeException("Error fetching column : " + column + " row : " + index);
         return values.get(column).get(index);
@@ -152,7 +146,8 @@ public class Matrix {
      * @throws RuntimeException if dependent variable is invalid
      */
     public void setDependentVariable(String dependentVariable) {
-        if (!values.keySet().contains(dependentVariable)) throw new RuntimeException("unknown Dependent variable");
+        if (!values.keySet().contains(dependentVariable))
+            throw new RuntimeException("unknown Dependent variable : " + dependentVariable);
         this.dependentVariable = dependentVariable;
     }
 
@@ -160,7 +155,14 @@ public class Matrix {
         if (values.keySet().contains(columnName))
             throw new RuntimeException("Can't add " + columnName + ". Value already present");
         columnList.add(columnName);
-        independentColumns.add(columnName);
+        getIndependentColumns().add(columnName);
+        values.put(columnName, vals);
+    }
+
+    public void addColumn(String columnName, List vals, boolean dontAddIndependent) {
+        if (values.keySet().contains(columnName))
+            throw new RuntimeException("Can't add " + columnName + ". Value already present");
+        columnList.add(columnName);
         values.put(columnName, vals);
     }
 
@@ -177,8 +179,6 @@ public class Matrix {
      */
     public void toCSV(String fileName) throws FileNotFoundException, UnsupportedEncodingException {
         PrintWriter writer = new PrintWriter(fileName, "UTF-8");
-        System.out.println(rowCount);
-        System.out.println(columnList.size());
         columnList.forEach((x) -> writer.print(x + ','));
         writer.println();
         for (int i = 0; i < this.rowCount; i++) {
