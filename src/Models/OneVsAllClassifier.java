@@ -59,21 +59,42 @@ public class OneVsAllClassifier {
             Regressor currentRegressor = new LogisticRegressor();
             currentRegressor.maxNumberOfIterations = 10;
             currentRegressor.fit(matrix);
+            currentRegressor.setName("out_" + currentDependentColumn.toString());
             currentRegressor.result();
             currentRegressor.saveResultToCSV("result_" + currentDependentColumn.toString());
             regressorList.add(currentRegressor);
         }
     }
 
-    public void predict() {
+    public void predict(Map<String, Double> tuple) {
+        double threshold = 0.5d;
+        double prediction;
+        for (Regressor currRegressor : regressorList) {
+            if ((prediction = currRegressor.predict(tuple)) > threshold) {
+                System.out.println("Classifier " + currRegressor.name + " has highest prob: " + prediction);
+                break;
+            } else {
+                System.out.println("Classifier " + currRegressor.name + " has proba: " + prediction);
+            }
+        }
+    }
 
+    public void useTrainedRegressors() throws IOException {
+        regressorList = new ArrayList<>();
+        for (Object currentDependentColumn : getUniqueOutcomes()) {
+            Regressor currentRegressor = new LogisticRegressor();
+
+            currentRegressor.copyPredictorValuesFromCSV("result_" + currentDependentColumn.toString());
+        }
     }
 
     public static void main(String[] args) throws IOException {
 
         Matrix matrix = Matrix.fromCSV("\\Files\\Exercise 3\\MNIST_train.csv");
+        Matrix test = Matrix.fromCSV("\\Files\\Exercise 3\\MNIST_test.csv");
         matrix.setDependentVariable("400");
+        test.setDependentVariable("400");
         OneVsAllClassifier o = new OneVsAllClassifier(matrix, null);
-        o.trainClassifier();
+//        o.trainClassifier();
     }
 }

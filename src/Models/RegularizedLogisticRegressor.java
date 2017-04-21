@@ -4,6 +4,8 @@ package Models;
 import Utils.Matrix;
 import Utils.MiscUtils;
 
+import java.util.Map;
+
 import static Utils.Functions.sigmoid;
 
 
@@ -66,6 +68,15 @@ public class RegularizedLogisticRegressor extends Regressor{
         double prediction = 0;
         for (String str : predictorIndex.keySet()) {
             prediction += predictorArray[predictorIndex.get(str)] * (double) matrix.get(str, row);
+        }
+        return sigmoid(prediction);
+    }
+
+    @Override
+    public double predict(Map<String, Double> tuple) {
+        double prediction = 0;
+        for (String str : predictorIndex.keySet()) {
+            prediction += predictorArray[predictorIndex.get(str)] *  tuple.get(str);
         }
         return sigmoid(prediction);
     }

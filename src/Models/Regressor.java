@@ -4,8 +4,8 @@ package Models;
 import Utils.Matrix;
 import Utils.MiscUtils;
 
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +67,12 @@ public abstract class Regressor {
      */
     String dependentVariable;
 
+    public String name;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     HashMap<String, Integer> columnIndex;
 
     public abstract double costFunction();
@@ -74,6 +80,8 @@ public abstract class Regressor {
     public abstract void fit(Matrix inputMatrix);
 
     public abstract double predict(int row);
+
+    public abstract double predict(Map<String, Double> tuple);
 
     public void setAlpha(double newAlpha) {
         this.alpha = newAlpha;
@@ -119,7 +127,8 @@ public abstract class Regressor {
         MiscUtils.line();
     }
 
-    public void saveResultToCSV(String fileName) throws FileNotFoundException {
+
+    public void saveResultToCSV (String fileName) throws FileNotFoundException {
         try(PrintWriter writer = new PrintWriter(fileName.endsWith("csv") ? fileName : fileName + ".csv")) {
             for (String predictorName : predictorIndex.keySet()) {
                 writer.print(predictorName + ",");
@@ -128,6 +137,50 @@ public abstract class Regressor {
         }
     }
 
-    public static void main(String[] args) {
+
+    public void copyPredictorValuesFromCSV (String filePath) throws IOException {
+        String absPath = new java.io.File(".").getCanonicalPath();
+        BufferedReader br = new BufferedReader(new FileReader(absPath + filePath));
+        String currLine;
+        Map<String, Double> tempMap = new HashMap<>();
+        while ((currLine = br.readLine()) != null) {
+            String[] predictorVal = currLine.split(",");
+            tempMap.put(predictorVal[0], Double.parseDouble(predictorVal[1]));
+        }
+        this.predictorArray = new double[tempMap.size() + 1];
+        this.predictorIndex = new HashMap<>();
+        int index = 1;
+        predictorIndex.put("def", 0);
+        for (String predictor : tempMap.keySet()) {
+            predictorIndex.put(predictor, index);
+            predictorArray[index] = tempMap.get(predictor);
+            index++;
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Regressor x = new LogisticRegressor();
+        x.copyPredictorValuesFromCSV("\\result_1.csv");
+        System.out.println(Arrays.toString(x.predictorArray));
+        for (String zz : x.predictorIndex.keySet()) {
+            System.out.println(zz + " " + x.predictorArray[x.predictorIndex.get(zz)]);
+        }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
