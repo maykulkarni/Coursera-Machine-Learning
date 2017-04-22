@@ -3,6 +3,7 @@ package Models;
 
 import Utils.Matrix;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,8 +69,9 @@ public class LogisticRegressor extends Regressor{
     @Override
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
+        tuple.put("def", 1d);
         for (String str : predictorIndex.keySet()) {
-            prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
+            prediction += predictorArray[predictorIndex.get(str)] * (tuple.get(str));
         }
         return sigmoid(prediction);
     }

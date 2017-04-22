@@ -59,6 +59,7 @@ public class LinearRegressor extends Regressor{
     @Override
     public double predict(Map<String, Double> tuple) {
         double prediction = 0;
+        tuple.put("def", 1d);
         for (String str : predictorIndex.keySet()) {
             prediction += predictorArray[predictorIndex.get(str)] * tuple.get(str);
         }

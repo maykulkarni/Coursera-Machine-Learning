@@ -1,9 +1,9 @@
 package Models;
 
 import Utils.Matrix;
+import Utils.MiscUtils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -20,6 +20,8 @@ public class OneVsAllClassifier {
 
     private Matrix matrix;
     private Regressor regressor;
+
+    public OneVsAllClassifier(){}
 
     public OneVsAllClassifier(Matrix matrix, Regressor regressor) {
         this.matrix = matrix;
@@ -54,10 +56,11 @@ public class OneVsAllClassifier {
     public void trainClassifier() throws FileNotFoundException {
         regressorList = new ArrayList<>();
         binarize();
+        System.out.println(matrix.getIndependentColumns());
         for (Object currentDependentColumn : getUniqueOutcomes()) {
             matrix.setDependentVariable("out_" + currentDependentColumn.toString());
             Regressor currentRegressor = new LogisticRegressor();
-            currentRegressor.maxNumberOfIterations = 10;
+            currentRegressor.maxNumberOfIterations = 15;
             currentRegressor.fit(matrix);
             currentRegressor.setName("out_" + currentDependentColumn.toString());
             currentRegressor.result();
@@ -69,12 +72,16 @@ public class OneVsAllClassifier {
     public void predict(Map<String, Double> tuple) {
         double threshold = 0.5d;
         double prediction;
+        List<Double> list = new ArrayList<>();
         for (Regressor currRegressor : regressorList) {
-            if ((prediction = currRegressor.predict(tuple)) > threshold) {
-                System.out.println("Classifier " + currRegressor.name + " has highest prob: " + prediction);
-                break;
-            } else {
-                System.out.println("Classifier " + currRegressor.name + " has proba: " + prediction);
+            prediction = currRegressor.predict(tuple);
+            System.out.println("Classifier " + currRegressor.name + " has proba: " + prediction);
+            list.add(prediction);
+        }
+        double max = list.stream().max(Double::compareTo).get();
+        for (int i = 0; i < regressorList.size(); i++) {
+            if (list.get(i) == max) {
+                System.out.println("Max: " + (i + 1));
             }
         }
     }
@@ -83,18 +90,40 @@ public class OneVsAllClassifier {
         regressorList = new ArrayList<>();
         for (Object currentDependentColumn : getUniqueOutcomes()) {
             Regressor currentRegressor = new LogisticRegressor();
+            currentRegressor.setName(currentDependentColumn.toString());
+            currentRegressor.copyPredictorValuesFromCSV("\\result_" + currentDependentColumn.toString() + ".csv");
+            regressorList.add(currentRegressor);
+        }
+    }
 
-            currentRegressor.copyPredictorValuesFromCSV("result_" + currentDependentColumn.toString());
+    public void test(String fileName) throws IOException {
+        String absPath = new File(".").getCanonicalPath();
+        BufferedReader br = new BufferedReader(new FileReader(absPath + fileName));
+        String currLine;
+        while ((currLine = br.readLine()) != null) {
+            Map<String, Double> tuple = new HashMap<>();
+            String[] splitLine = currLine.split(",");
+            int index = 0;
+            for (String str : splitLine) {
+                tuple.put(String.valueOf(index), Double.parseDouble(str));
+                index++;
+            }
+            Double actual = tuple.get("400");
+            tuple.remove("400");
+            MiscUtils.line();
+            System.out.println("Actual: " + actual);
+            predict(tuple);
+            MiscUtils.line();
         }
     }
 
     public static void main(String[] args) throws IOException {
-
         Matrix matrix = Matrix.fromCSV("\\Files\\Exercise 3\\MNIST_train.csv");
-        Matrix test = Matrix.fromCSV("\\Files\\Exercise 3\\MNIST_test.csv");
         matrix.setDependentVariable("400");
-        test.setDependentVariable("400");
+        matrix.toCSV("imadiscodancer");
         OneVsAllClassifier o = new OneVsAllClassifier(matrix, null);
+        o.useTrainedRegressors();
 //        o.trainClassifier();
+        o.test("\\Files\\Exercise 3\\MNIST_test.csv");
     }
 }

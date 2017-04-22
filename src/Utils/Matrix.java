@@ -24,6 +24,7 @@ public class Matrix {
      */
     public List<String> columnList;
 
+    private boolean independentColumnsComputed = false;
     private String dependentVariable;
     public long rowCount = 0;
 
@@ -42,6 +43,10 @@ public class Matrix {
 
     public List<String> getIndependentColumns() {
         if (independentColumns == null) throw new IllegalStateException("Independent column list null");
+        if (!independentColumnsComputed) {
+            independentColumnsComputed = true;
+            this.independentColumns.remove(dependentVariable);
+        }
         return independentColumns;
     }
 
@@ -149,6 +154,7 @@ public class Matrix {
         if (!values.keySet().contains(dependentVariable))
             throw new RuntimeException("unknown Dependent variable : " + dependentVariable);
         this.dependentVariable = dependentVariable;
+        independentColumnsComputed = false;
     }
 
     public void addColumn(String columnName, List vals) {

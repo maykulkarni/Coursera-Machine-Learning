@@ -149,8 +149,8 @@ public abstract class Regressor {
         }
         this.predictorArray = new double[tempMap.size() + 1];
         this.predictorIndex = new HashMap<>();
-        int index = 1;
-        predictorIndex.put("def", 0);
+        int index = 0;
+        // WARNING: "def" index may or may not be 0
         for (String predictor : tempMap.keySet()) {
             predictorIndex.put(predictor, index);
             predictorArray[index] = tempMap.get(predictor);
@@ -159,6 +159,7 @@ public abstract class Regressor {
     }
 
     public static void main(String[] args) throws IOException {
+        // random test
         Regressor x = new LogisticRegressor();
         x.copyPredictorValuesFromCSV("\\result_1.csv");
         System.out.println(Arrays.toString(x.predictorArray));
