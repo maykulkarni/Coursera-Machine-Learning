@@ -63,7 +63,7 @@ public class ImageViewer {
     }
 
     public static void main(String[] args) throws IOException {
-        ImageFrame imageFrame = null;
+        ImageFrame imageFrame;
         imageFrame = new ImageFrame(completeGrid());
         imageFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         imageFrame.setResizable(false);

@@ -22,7 +22,6 @@ public abstract class Regressor {
 
     /**
      * Holds the prediction coefficients.
-     * Prediction = \sum (Coeff_i * X_i)
      */
     double[] predictorArray;
 
@@ -79,6 +78,7 @@ public abstract class Regressor {
 
     public abstract void fit(Matrix inputMatrix);
 
+    // todo: vectorize this
     public abstract double predict(int row);
 
     public abstract double predict(Map<String, Double> tuple);
