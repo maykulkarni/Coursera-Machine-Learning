@@ -60,7 +60,7 @@ public class OneVsAllClassifier {
         for (Object currentDependentColumn : getUniqueOutcomes()) {
             matrix.setDependentVariable("out_" + currentDependentColumn.toString());
             Regressor currentRegressor = new LogisticRegressor();
-            currentRegressor.maxNumberOfIterations = 15;
+            currentRegressor.maxNumberOfIterations = 50;
             currentRegressor.fit(matrix);
             currentRegressor.setName("out_" + currentDependentColumn.toString());
             currentRegressor.result();
