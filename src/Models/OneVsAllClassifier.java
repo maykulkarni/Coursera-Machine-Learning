@@ -69,6 +69,7 @@ public class OneVsAllClassifier {
         }
     }
 
+    // TODO have to test accuracy manually, make it automatic
     public void predict(Map<String, Double> tuple) {
         double threshold = 0.5d;
         double prediction;
@@ -86,12 +87,13 @@ public class OneVsAllClassifier {
         }
     }
 
+    // TODO Replace hardcoded values to general values
     public void useTrainedRegressors() throws IOException {
         regressorList = new ArrayList<>();
         for (Object currentDependentColumn : getUniqueOutcomes()) {
             Regressor currentRegressor = new LogisticRegressor();
             currentRegressor.setName(currentDependentColumn.toString());
-            currentRegressor.copyPredictorValuesFromCSV("\\result_" + currentDependentColumn.toString() + ".csv");
+            currentRegressor.copyPredictorValuesFromCSV("\\Files\\Exercise 3\\result\\result_" + currentDependentColumn.toString() + ".csv");
             regressorList.add(currentRegressor);
         }
     }
@@ -120,7 +122,6 @@ public class OneVsAllClassifier {
     public static void main(String[] args) throws IOException {
         Matrix matrix = Matrix.fromCSV("\\Files\\Exercise 3\\MNIST_train.csv");
         matrix.setDependentVariable("400");
-        matrix.toCSV("imadiscodancer");
         OneVsAllClassifier o = new OneVsAllClassifier(matrix, null);
         o.useTrainedRegressors();
 //        o.trainClassifier();

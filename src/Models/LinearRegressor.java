@@ -76,9 +76,9 @@ public class LinearRegressor extends Regressor{
         double sum = 0;
         for (int i = 0; i < rowCount; i++) {
             double prediction = predict(i);
-            double actual = (Double) matrix.get(dependentVariable, i);
+            double actual = (double) matrix.get(dependentVariable, i);
             sum += (prediction - actual)
-                    * (col.equals("def") ? 1 : (Double) matrix.get(col, i));
+                    * (col.equals("def") ? 1 : (double) matrix.get(col, i));
         }
         return sum / rowCount;
     }

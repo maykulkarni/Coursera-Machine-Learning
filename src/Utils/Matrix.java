@@ -82,12 +82,15 @@ public class Matrix {
         return matrix;
     }
 
+    /**
+     * Converts String values which are read from CSV to double.
+     * Will fail if there are values that are not numbers
+     */
     public void attemptNumericalConversion() {
         if (!isNumericalData) {
             System.out.println("Attempting to convert data to numerical");
             try {
-                System.out.println(getIndependentColumns());
-                for (String col : getIndependentColumns()) {
+                for (String col : columnList) {
                     List<String> currCol = values.get(col);
                     List<Double> modifiedList = currCol.stream()
                             .map(Double::parseDouble)
