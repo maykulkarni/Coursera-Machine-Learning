@@ -19,6 +19,10 @@ public class Matrix {
      */
     public Map<String, List> values;
 
+    public int getRowCount() {
+        return rowCount;
+    }
+
     /**
      * column names
      */
@@ -26,7 +30,22 @@ public class Matrix {
 
     private boolean independentColumnsComputed = false;
     private String dependentVariable;
-    public long rowCount = 0;
+    private int rowCount = 0;
+    private double[][] valueArray;
+    private boolean valueChanged = false;
+
+    public double[][] getValueArray() {
+        if (!valueChanged || valueArray == null) {
+            attemptNumericalConversion();
+            valueArray = new double[rowCount][getIndependentColumns().size()];
+            for (int i = 0; i < rowCount; i++) {
+                for (int j = 0; j < getIndependentColumns().size(); j++) {
+                    valueArray[i][j] = (double) get(getIndependentColumns().get(j), i);
+                }
+            }
+        }
+        return valueArray;
+    }
 
     public String getDependentVariable() {
         if (dependentVariable == null) throw new IllegalStateException("Dependent variable not set!");
@@ -39,6 +58,10 @@ public class Matrix {
 
     public Matrix() {
         values = new HashMap<>();
+    }
+
+    public int getColumnCount() {
+        return this.columnList.size();
     }
 
     public List<String> getIndependentColumns() {
@@ -67,7 +90,7 @@ public class Matrix {
             matrix.values.put(String.valueOf(i), new ArrayList<>());
         for (int i = 0; i < firstLine.length; i++)
             matrix.values.get(String.valueOf(i)).add(firstLine[i]);
-        long rowSize = 1;
+        int rowSize = 1;
         while ((currLine = br.readLine()) != null) {
             String[] splitLine = currLine.split(",");
             for (int i = 0; i < splitLine.length; i++)
@@ -166,6 +189,7 @@ public class Matrix {
         columnList.add(columnName);
         getIndependentColumns().add(columnName);
         values.put(columnName, vals);
+        valueChanged = true;
     }
 
     public void addColumn(String columnName, List vals, boolean dontAddIndependent) {
@@ -173,11 +197,13 @@ public class Matrix {
             throw new RuntimeException("Can't add " + columnName + ". Value already present");
         columnList.add(columnName);
         values.put(columnName, vals);
+        valueChanged = true;
     }
 
     public void addNDegrees(int n) {
         if (!isNumericalData) attemptNumericalConversion();
         MiscUtils.addNDegrees(this, n);
+        valueChanged = true;
     }
 
     /**
@@ -200,6 +226,27 @@ public class Matrix {
             }
         }
         writer.close();
+    }
+
+
+    public static Matrix multiply(Matrix one, Matrix two) {
+        double[][] oneArray = one.getValueArray();
+        double[][] twoArray = two.getValueArray();
+
+        if (one.getColumnCount() != two.getRowCount()) {
+            throw new RuntimeException("Matrix dimensions do not match.");
+        }
+
+        double[][] answer = new double[one.getRowCount()][two.getColumnCount()];
+        for (int i = 0; i < one.getColumnCount(); i++) {
+            for (int j = 0; j < two.getRowCount(); j++) {
+                double sum = 0;
+                for (int k = 0; k < one.getRowCount(); k++) {
+                    sum += oneArray[i][k] * twoArray[k][j];
+                }
+            }
+        }
+        return null;
     }
 }
 
